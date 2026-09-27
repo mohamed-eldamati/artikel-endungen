@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Artikel-Endungen</title>
+<style>
+  :root{
+    --der:#2563eb; --der-bg:#dbeafe;
+    --die:#dc2626; --die-bg:#fee2e2;
+    --das:#16a34a; --das-bg:#dcfce7;
+    padding-top: env(safe-area-inset-top,0px);
+    padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Georgia','Segoe UI',serif;
+    background:linear-gradient(160deg,#fef9f0 0%, #eef6ff 50%, #f0fdf4 100%);
+    color:#2b2b2b;
+    min-height:100%;
+    padding:20px 14px 60px;
+  }
+  h1{
+    text-align:center;
+    font-size:clamp(24px,5vw,38px);
+    color:#333;
+    margin:10px 0 4px;
+  }
+  .subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:26px;
+    font-size:clamp(14px,3vw,17px);
+  }
+  .nav{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+  }
+  .nav button{
+    border:none;
+    border-radius:30px;
+    padding:10px 22px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
+    transition:transform .15s;
+  }
+  .nav button:hover{transform:translateY(-2px);}
+  .nav button.der{color:var(--der);border:2px solid var(--der);}
+  .nav button.die{color:var(--die);border:2px solid var(--die);}
+  .nav button.das{color:var(--das);border:2px solid var(--das);}
+  .nav button.quiz{color:#7c3aed;border:2px solid #7c3aed;}
+
+  .section{display:none; max-width:900px; margin:0 auto;}
+  .section.active{display:block;}
+
+  .group-title{
+    text-align:center;
+    font-size:clamp(28px,6vw,44px);
+    font-weight:bold;
+    border-radius:20px;
+    padding:14px;
+    margin-bottom:22px;
+  }
+  .group-title.der{background:var(--der-bg);color:var(--der);}
+  .group-title.die{background:var(--die-bg);color:var(--die);}
+  .group-title.das{background:var(--das-bg);color:var(--das);}
+
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:#fff;
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    border-left:8px solid #ccc;
+  }
+  .card.der{border-left-color:var(--der);}
+  .card.die{border-left-color:var(--die);}
+  .card.das{border-left-color:var(--das);}
+
+  .ending{
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:6px;
+  }
+  .card.der .ending{color:var(--der);}
+  .card.die .ending{color:var(--die);}
+  .card.das .ending{color:var(--das);}
+
+  .example{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:20px;
+    margin-top:6px;
+  }
+  .example span{font-weight:bold;}
+  .speak-btn{
+    border:none;
+    background:#f3f4f6;
+    border-radius:50%;
+    width:38px;
+    height:38px;
+    font-size:18px;
+    cursor:pointer;
+  }
+  .speak-btn:active{transform:scale(0.9);}
+
+  /* Quiz */
+  .quiz-box{
+    background:#fff;
+    border-radius:20px;
+    padding:30px 20px;
+    max-width:500px;
+    margin:0 auto;
+    text-align:center;
+    box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  }
+  .quiz-word{
+    font-size:clamp(32px,8vw,48px);
+    font-weight:bold;
+    margin:18px 0;
+    color:#333;
+  }
+  .quiz-btns{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  .quiz-btns button{
+    font-size:20px;
+    font-weight:bold;
+    padding:14px 26px;
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    color:#fff;
+  }
+  .quiz-btns .b-der{background:var(--der);}
+  .quiz-btns .b-die{background:var(--die);}
+  .quiz-btns .b-das{background:var(--das);}
+  .feedback{
+    margin-top:18px;
+    font-size:20px;
+    font-weight:bold;
+    min-height:28px;
+  }
+  .score{
+    margin-top:14px;
+    color:#555;
+    font-size:16px;
+  }
+  .next-btn{
+    margin-top:16px;
+    padding:10px 24px;
+    border-radius:12px;
+    border:none;
+    background:#7c3aed;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+    display:none;
+  }
+</style>
+</head>
+<body>
+
+<h1>Der, Die, Das</h1>
+<div class="subtitle">Wortendungen erkennen und üben</div>
+
+<div class="nav">
+  <button class="der" onclick="showSection('der')">Der</button>
+  <button class="die" onclick="showSection('die')">Die</button>
+  <button class="das" onclick="showSection('das')">Das</button>
+  <button class="quiz" onclick="showSection('quiz')">Übung</button>
+</div>
+
+<div id="der" class="section active">
+  <div class="group-title der">Der</div>
+  <div class="cards" id="der-cards"></div>
+</div>
+
+<div id="die" class="section">
+  <div class="group-title die">Die</div>
+  <div class="cards" id="die-cards"></div>
+</div>
+
+<div id="das" class="section">
+  <div class="group-title das">Das</div>
+  <div class="cards" id="das-cards"></div>
+</div>
+
+<div id="quiz" class="section">
+  <div class="quiz-box">
+    <div>Welcher Artikel passt?</div>
+    <div class="quiz-word" id="quiz-word">Wohnung</div>
+    <div class="quiz-btns">
+      <button class="b-der" onclick="checkAnswer('der')">der</button>
+      <button class="b-die" onclick="checkAnswer('die')">die</button>
+      <button class="b-das" onclick="checkAnswer('das')">das</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Weiter</button>
+    <div class="score" id="score">Punkte: 0 / 0</div>
+  </div>
+</div>
+
+<script>
+const data = {
+  der: [
+    {ending:"-ant", word:"der Elefant"},
+    {ending:"-ent", word:"der Student"},
+    {ending:"-er", word:"der Lehrer"},
+    {ending:"-ich", word:"der Teppich"},
+    {ending:"-ist", word:"der Polizist"},
+    {ending:"-ast", word:"der Kontrast"},
+    {ending:"-loge", word:"der Biologe"},
+    {ending:"-or", word:"der Motor"}
+  ],
+  die: [
+    {ending:"-ei", word:"die Bäckerei"},
+    {ending:"-heit", word:"die Freiheit"},
+    {ending:"-keit", word:"die Möglichkeit"},
+    {ending:"-schaft", word:"die Freundschaft"},
+    {ending:"-ung", word:"die Wohnung"},
+    {ending:"-age", word:"die Garage"},
+    {ending:"-at", word:"die Heimat"},
+    {ending:"-enz", word:"die Konferenz"},
+    {ending:"-ie", word:"die Familie"}
+  ],
+  das: [
+    {ending:"-chen", word:"das Mädchen"},
+    {ending:"-lein", word:"das Fräulein"},
+    {ending:"-ett", word:"das Bett"},
+    {ending:"-il", word:"das Ventil"},
+    {ending:"-ma", word:"das Thema"},
+    {ending:"-o", word:"das Auto"},
+    {ending:"-um", word:"das Museum"},
+    {ending:"-em", word:"das Problem"},
+    {ending:"-et", word:"das Ballett"}
+  ]
+};
+
+function speak(text){
+  try{
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "de-DE";
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function buildCards(){
+  ["der","die","das"].forEach(key=>{
+    const container = document.getElementById(key+"-cards");
+    data[key].forEach(item=>{
+      const card = document.createElement("div");
+      card.className = "card "+key;
+      card.innerHTML = `
+        <div class="ending">${item.ending}</div>
+        <div class="example">
+          <span>${item.word}</span>
+          <button class="speak-btn" onclick="speak('${item.word}')">🔊</button>
+        </div>`;
+      container.appendChild(card);
+    });
+  });
+}
+buildCards();
+
+function showSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+// Quiz
+let allWords = [];
+["der","die","das"].forEach(key=>{
+  data[key].forEach(item=>{
+    const [article, ...rest] = item.word.split(" ");
+    allWords.push({article: article, noun: rest.join(" ")});
+  });
+});
+let current = null;
+let score = 0, total = 0;
+let answered = false;
+
+function pickQuestion(){
+  current = allWords[Math.floor(Math.random()*allWords.length)];
+  document.getElementById("quiz-word").textContent = current.noun;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("next-btn").style.display = "none";
+  answered = false;
+  speak(current.article + " " + current.noun === current.article + " " + current.noun ? current.noun : current.noun);
+}
+
+function checkAnswer(choice){
+  if(answered) return;
+  answered = true;
+  total++;
+  const fb = document.getElementById("feedback");
+  if(choice === current.article){
+    score++;
+    fb.style.color = "#16a34a";
+    fb.textContent = "Richtig! " + current.article + " " + current.noun;
+    speak(current.article + " " + current.noun);
+  } else {
+    fb.style.color = "#dc2626";
+    fb.textContent = "Leider falsch. Richtig ist: " + current.article + " " + current.noun;
+    speak(current.article + " " + current.noun);
+  }
+  document.getElementById("score").textContent = "Punkte: " + score + " / " + total;
+  document.getElementById("next-btn").style.display = "inline-block";
+}
+
+function nextQuestion(){
+  pickQuestion();
+}
+pickQuestion();
+</script>
+
+</body>
+</html>
